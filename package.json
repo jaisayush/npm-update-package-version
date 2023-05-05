@@ -1,0 +1,57 @@
+{
+  "name": "npm-update-package-version",
+  "version": "0.0.1-beta",
+  "description": "A tool to check the latest versions of dependencies and dev-dependencies in your package.json file",
+  "main": "index.js",
+  "bin": {
+    "npm-update-package-version": "./index.js"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaisayush/npm-update-package-version"
+  },
+  "author": {
+    "name": "Ayush Jaiswal",
+    "email": "ayush.jaiswal47.aj@gmail.com",
+    "url": "https://www.linkedin.com/in/jaisayush/"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.23.0",
+    "cli-table3": "^0.6.0",
+    "chalk": "^4.1.2",
+    "ini": "^2.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "keywords": [
+    "npm",
+    "update",
+    "check",
+    "dependencies",
+    "dev-dependencies",
+    "package.json",
+    "version",
+    "updates",
+    "npm updates",
+    "npm-check",
+    "npm dependencies",
+    "npm dev-dependencies",
+    "npm package.json",
+    "npm outdated",
+    "npm packages",
+    "npm outdated packages",
+    "npm update checker",
+    "npm update notification",
+    "npm version update",
+    "npm update checker tool"
+  ],
+  "homepage": "https://github.com/jaisayush/npm-update-package-version#readme"
+}
