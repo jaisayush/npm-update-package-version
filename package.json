@@ -1,6 +1,6 @@
 {
   "name": "npm-update-package-version",
-  "version": "0.0.1-beta",
+  "version": "0.0.1",
   "description": "A tool to check the latest versions of dependencies and dev-dependencies in your package.json file",
   "main": "index.js",
   "bin": {
