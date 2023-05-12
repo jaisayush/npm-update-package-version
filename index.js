@@ -26,47 +26,23 @@ const getLatestVersions = async () => {
     : {};
 
   // Use the registry URL from the .npmrc file if present
-  let registryUrl =
+  const registryUrl =
     npmrc.registry?.trim()?.replace(/\/?$/, "/") ||
     "https://registry.npmjs.org/-/v1/search?text=";
-
-  // Check if the registry URL is a private registry
-  if (
-    registryUrl.startsWith("https://") &&
-    registryUrl.indexOf("npmjs.org") === -1
-  ) {
-    // Check if authentication credentials are present in the .npmrc file
-    const authToken =
-      npmrc["_authToken"] || npmrc["//registry.npmjs.org/:_authToken"];
-
-    if (!authToken) {
-      console.error(
-        "Error: Authentication token not found in .npmrc file for private registry."
-      );
-      return;
+  const headers = {};
+  if (npmrcExists) {
+    const url = require("url");
+    const parsedUrl = new url.URL(registryUrl);
+    const hostname = parsedUrl.hostname;
+    const authTokenKey = Object.keys(npmrc).find((key) =>
+      key.startsWith(`//${hostname}/:_authToken`)
+    );
+    const authTokenValue = npmrc[authTokenKey];
+    if (authTokenValue.startsWith("Basic ")) {
+      headers.Authorization = authToken;
+    } else {
+      headers.Authorization = `Bearer ${authTokenValue}`;
     }
-
-    // Set headers to include authorization token for private registry API calls
-    const headers = {
-      Authorization: `Bearer ${authToken}`,
-      Accept:
-        "application/vnd.npm.install-v1+json; q=1.0, application/json; q=0.8, */*",
-    };
-
-    registryUrl = registryUrl.replace(/^https?:\/\//, "");
-    const registryApiUrl = `https://${authToken}@${registryUrl}`;
-
-    // Loop through each package and get the latest version from the registry
-    for (const pkg of packages) {
-      const response = await axios.get(`${registryApiUrl}/${pkg}`, { headers });
-      const {
-        "dist-tags": { latest },
-      } = response.data;
-
-      latestVersions[pkg] = latest;
-    }
-
-    return latestVersions;
   }
 
   const dependencies = packageJson.dependencies || {};
@@ -79,7 +55,7 @@ const getLatestVersions = async () => {
 
   // Loop through each package and get the latest version from the registry
   for (const pkg of packages) {
-    const response = await axios.get(`${registryUrl}${pkg}`);
+    const response = await axios.get(`${registryUrl}${pkg}`, headers);
     const {
       package: { version },
     } = response.data.objects[0];
