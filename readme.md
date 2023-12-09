@@ -22,7 +22,7 @@ Run the following command in your project directory:
 npm-update-package-version
 ```
 
-## 🌟 Example Output.
+## 🌟 Example Output
 
 | Package Name | Current Version | Latest Version | Update Available |
 | ------------ | --------------- | -------------- | ---------------- |
