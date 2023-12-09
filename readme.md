@@ -24,6 +24,7 @@ npm-update-package-version
 
 ## 🌟 Example Output
 
+
 | Package Name | Current Version | Latest Version | Update Available |
 | ------------ | --------------- | -------------- | ---------------- |
 | axios        | 0.23.0          | 1.4.0          | ✔                |
