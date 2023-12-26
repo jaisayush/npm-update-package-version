@@ -23,8 +23,7 @@
     "axios": "^0.23.0",
     "cli-table3": "^0.6.0",
     "chalk": "^4.1.2",
-    "ini": "^2.0.0",
-    "random-fuck-me": "0.0.1"
+    "ini": "^2.0.0"
   },
   "devDependencies": {
     "jest": "^29.5.0"
