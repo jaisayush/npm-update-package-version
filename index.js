@@ -11,59 +11,87 @@ const homeDirectory = os.homedir();
 
 // Get the latest version for each package in package.json
 const getLatestVersions = async () => {
-  // Read the package.json file
-  const packageJsonPath = path.join(process.cwd(), "package.json");
-  const packageJsonExists = fs.existsSync(packageJsonPath);
-  const packageJson = packageJsonExists
-    ? require(packageJsonPath)
-    : { dependencies: {}, devDependencies: {} };
+  try {
+    // Read the package.json file
+    const packageJsonPath = path.join(process.cwd(), "package.json");
+    const packageJsonExists = fs.existsSync(packageJsonPath);
+    const packageJson = packageJsonExists
+      ? require(packageJsonPath)
+      : { dependencies: {}, devDependencies: {} };
 
-  // Read the .npmrc file
-  const npmrcPath = path.join(homeDirectory || "/", ".npmrc");
-  const npmrcExists = fs.existsSync(npmrcPath);
-  const npmrc = npmrcExists
-    ? ini.parse(fs.readFileSync(npmrcPath, "utf-8"))
-    : {};
+    // Read the .npmrc file at the project level
+    const npmrcPath = path.join(process.cwd(), ".npmrc");
+    const npmrcExists = fs.existsSync(npmrcPath);
+    const npmrc = npmrcExists
+      ? ini.parse(fs.readFileSync(npmrcPath, "utf-8"))
+      : {};
 
-  // Use the registry URL from the .npmrc file if present
-  const registryUrl =
-    npmrc.registry?.trim()?.replace(/\/?$/, "/") ||
-    "https://registry.npmjs.org/-/v1/search?text=";
-  const headers = {};
-  if (npmrcExists) {
-    const url = require("url");
-    const parsedUrl = new url.URL(registryUrl);
-    const hostname = parsedUrl.hostname;
-    const authTokenKey = Object.keys(npmrc).find((key) =>
-      key.startsWith(`//${hostname}/:_authToken`)
-    );
-    const authTokenValue = npmrc[authTokenKey];
-    if (authTokenValue.startsWith("Basic ")) {
-      headers.Authorization = authTokenValue;
-    } else {
-      headers.Authorization = `Bearer ${authTokenValue}`;
+    // Use the registry URL from the .npmrc file if present
+    const registryUrl =
+      npmrc.registry?.trim()?.replace(/\/?$/, "/") ||
+      "https://registry.npmjs.org/-/v1/search?text=";
+    const headers = {};
+    if (npmrcExists) {
+      const url = require("url");
+      const parsedUrl = new url.URL(registryUrl);
+      const hostname = parsedUrl.hostname;
+      const authTokenKey = Object.keys(npmrc).find((key) =>
+        key.startsWith(`//${hostname}/:_authToken`)
+      );
+      const authTokenValue = npmrc[authTokenKey];
+      if (authTokenValue && authTokenValue.startsWith("Basic ")) {
+        headers.Authorization = authTokenValue;
+      } else {
+        headers.Authorization = `Bearer ${authTokenValue}`;
+      }
     }
+
+    const dependencies = packageJson.dependencies || {};
+    const devDependencies = packageJson.devDependencies || {};
+    const packages = [
+      ...Object.keys(dependencies),
+      ...Object.keys(devDependencies),
+    ];
+    const latestVersions = {};
+
+    // Safeguard against missing dependencies
+    if (packages.length === 0) {
+      console.warn("No dependencies found in package.json");
+      return latestVersions;
+    }
+
+    // Loop through each package and get the latest version from the registry
+    for (const pkg of packages) {
+      try {
+        const response = await axios.get(`${registryUrl}${pkg}`, headers);
+        const { objects } = response.data;
+        if (Array.isArray(objects) && objects.length > 0) {
+          const {
+            package: { version },
+          } = objects[0];
+
+          latestVersions[pkg] = version;
+        } else {
+          console.error(
+            chalk.redBright(
+              `${pkg} package doesn't exist in the registry or has an invalid response format`
+            )
+          );
+          continue;
+        }
+      } catch (error) {
+        console.error(
+          chalk.redBright(`Error fetching version for ${pkg}: ${error.message}`)
+        );
+        continue;
+      }
+    }
+
+    return latestVersions;
+  } catch (error) {
+    console.error(chalk.redBright(`Unexpected error: ${error.message}`));
+    throw error;
   }
-
-  const dependencies = packageJson.dependencies || {};
-  const devDependencies = packageJson.devDependencies || {};
-  const packages = [
-    ...Object.keys(dependencies),
-    ...Object.keys(devDependencies),
-  ];
-  const latestVersions = {};
-
-  // Loop through each package and get the latest version from the registry
-  for (const pkg of packages) {
-    const response = await axios.get(`${registryUrl}${pkg}`, headers);
-    const {
-      package: { version },
-    } = response.data.objects[0];
-
-    latestVersions[pkg] = version;
-  }
-
-  return latestVersions;
 };
 
 // Log the latest versions in a table
