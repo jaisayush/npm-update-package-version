@@ -39,7 +39,7 @@ const getLatestVersions = async () => {
     );
     const authTokenValue = npmrc[authTokenKey];
     if (authTokenValue.startsWith("Basic ")) {
-      headers.Authorization = authToken;
+      headers.Authorization = authTokenValue;
     } else {
       headers.Authorization = `Bearer ${authTokenValue}`;
     }
