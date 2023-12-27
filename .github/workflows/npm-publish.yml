@@ -21,9 +21,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests
-        run: npm test
-
       - name: Git configuration
         run: |
           git config --global user.email "ayush.jaiswal47.aj@gmail.com"

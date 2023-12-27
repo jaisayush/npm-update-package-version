@@ -6,8 +6,6 @@ const fs = require("fs");
 const path = require("path");
 const ini = require("ini");
 const chalk = require("chalk");
-const os = require("os");
-const homeDirectory = os.homedir();
 
 // Get the latest version for each package in package.json
 const getLatestVersions = async () => {
