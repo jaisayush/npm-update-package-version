@@ -3,6 +3,7 @@
 [![npm version](https://badge.fury.io/js/npm-update-package-version.svg)](https://badge.fury.io/js/npm-update-package-version)
 [![GitHub issues](https://img.shields.io/github/issues/jaisayush/npm-update-package-version)](https://github.com/jaisayush/npm-update-package-version/issues)
 [![GitHub license](https://img.shields.io/github/license/jaisayush/npm-update-package-version)](https://github.com/jaisayush/npm-update-package-version/blob/main/LICENSE)
+![npm](https://img.shields.io/npm/dt/npm-update-package-version)
 
 🔎📦 npm-update-package-version is a command-line tool that checks for available updates of your project's dependencies. It lists the package name and the latest version available in a table format.
 
